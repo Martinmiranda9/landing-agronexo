@@ -1,0 +1,439 @@
+@import "tailwindcss";
+
+/* AgroNexo no tiene tema oscuro. Por defecto Tailwind activa `dark:` con el modo oscuro del sistema, y los
+   componentes shadcn traen `dark:bg-input/30`, `dark:hover:…`: en un equipo en modo oscuro pintaban de marrón
+   inputs, selects y botones outline. Con esto `dark:` solo aplica bajo un ancestro `.dark` (hoy nunca). */
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PALETA AGRONEXO v4 · "Verde campo" (ver ia/frontend_implementation_plan.md › Paleta)
+   `static`: emite todas las variables aunque ninguna utilidad las use directo, porque el tema
+   shadcn de más abajo las referencian con var().
+   ───────────────────────────────────────────────────────────────────────────── */
+@theme static {
+  /* ── Escala de marca: verde campo (tono 148°), armada en OKLCH desde #3E7949.
+     700 = acción principal (botón, barra actual) · 950 = pine (sidebar, activo, dato clave). ── */
+  --color-field-50: #f4fcf3;
+  --color-field-100: #e5f7e5;
+  --color-field-200: #cdeecf;
+  --color-field-300: #ade1b2;
+  --color-field-400: #88cc8f;
+  --color-field-500: #63b070;
+  --color-field-600: #4d9259;
+  --color-field-700: #3e7949;
+  --color-field-800: #29603b;
+  --color-field-900: #16482d;
+  --color-field-950: #00311e;
+
+  /* ── Neutros salvia: grises con un toque mínimo del verde de marca. Sin crema en el producto.
+     50 = lienzo · blanco = cards · 200 = borde de card · 400 = borde de control (3,3:1) ·
+     500 = placeholder (4,7:1) · 600 = texto secundario (6,5:1) · 800 = texto de apoyo. ── */
+  --color-sage-25: #f9fbfa;
+  --color-sage-50: #f4f6f4;
+  --color-sage-100: #ecefec;
+  --color-sage-200: #e0e4e1;
+  --color-sage-300: #ced2ce;
+  --color-sage-400: #8a8f8b;
+  --color-sage-500: #707470;
+  --color-sage-600: #5a5f5b;
+  --color-sage-700: #434844;
+  --color-sage-800: #2c302c;
+  --color-sage-900: #191d19;
+  --color-sage-950: #0b100c;
+
+  /* ── Estados reales: verde / naranja / rojo. El 600 (500 en naranja) es el tinte y el punto; el texto de
+     los tags es el 800, que llega a 6,4–6,6:1 sobre su tinte. El rojo es el 700: texto y botón en AA. ── */
+  --color-status-green: #16a34a;
+  --color-status-green-ink: #166534;
+  --color-status-orange: #f97316;
+  --color-status-orange-ink: #9a3412;
+  --color-status-red: #b91c1c;
+
+  /* ── Pine = field-950: lo importante (selección activa, títulos, dato clave). ── */
+  --color-pine: #00311e;
+
+  /* ── Tipografía · Inter (la de Cashmere) y Geist Mono solo para cifras ── */
+  --font-sans: var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-heading-sm: 20px;
+  --text-heading-sm--line-height: 28px;
+  --text-heading-sm--font-weight: 600;
+  --text-heading-md: 24px;
+  --text-heading-md--line-height: 32px;
+  --text-heading-md--font-weight: 600;
+  --text-heading-lg: 30px;
+  --text-heading-lg--line-height: 36px;
+  --text-heading-lg--font-weight: 700;
+  --text-heading-xl: 36px;
+  --text-heading-xl--line-height: 40px;
+  --text-heading-xl--font-weight: 700;
+  /* Saludo de una pantalla de entrada (Buscar): grande y liviano, un solo uso por pantalla. */
+  --text-display: 44px;
+  --text-display--line-height: 52px;
+  --text-display--font-weight: 500;
+  --text-display--letter-spacing: -0.03em;
+
+  --tracking-heading: -0.01em;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TEMA SHADCN → AGRONEXO
+   Los componentes de shadcn (y los que vengan de bloques/plantillas) leen estos nombres
+   semánticos (bg-primary, text-muted-foreground, border-input, ring-ring…). Se definen UNA vez
+   acá apuntando a la paleta v4, así los componentes se instalan sin retocarlos y quedan con la
+   marca. Para cambiar la identidad: tocar solo esta tabla y la paleta de arriba.
+   Proporción buscada: ~60% lienzo salvia, ~28% superficies blancas, ~8% pine/verde, ~4% estados.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Cashmere: base de 1rem, redondeado generoso (escala sm 8 · md 12 · lg 16 · xl 22 · 2xl 28 · 3xl 40). */
+  --radius: 1rem;
+
+  --background: var(--color-sage-50);
+  --foreground: var(--color-pine);
+  --card: #ffffff;
+  --card-foreground: var(--color-pine);
+  --popover: #ffffff;
+  --popover-foreground: var(--color-pine);
+
+  /* Acción principal: verde campo 700 con texto blanco (5,2:1). Hover: 800. Lo activo/seleccionado
+     (chips, toggles, radios, checkbox, pasos) es pine: así el botón y la selección no compiten. */
+  --primary: var(--color-field-700);
+  --primary-hover: var(--color-field-800);
+  --primary-foreground: #ffffff;
+  --secondary: color-mix(in oklab, var(--color-pine) 8%, transparent);
+  --secondary-foreground: var(--color-pine);
+  --muted: var(--color-sage-100);
+  --muted-foreground: var(--color-sage-600);
+  --accent: var(--color-sage-100);
+  --accent-foreground: var(--color-pine);
+  --destructive: var(--color-status-red);
+  --destructive-foreground: #ffffff;
+  /* No son de shadcn: estados positivo / pendiente de los tags (Badge success / warning).
+     Los estados van siempre como pill clara con texto 800; el verde de marca va siempre sólido. Así
+     "Aceptada" y el botón principal no se confunden aunque compartan familia de verde. */
+  --success: var(--color-status-green);
+  --success-foreground: var(--color-status-green-ink);
+  --warning: var(--color-status-orange);
+  --warning-foreground: var(--color-status-orange-ink);
+
+  /* Tintes de superficie de producto (sobre lienzo/superficie). Neutros: el verde queda para la marca. */
+  --surface-sunken: color-mix(in oklab, var(--color-sage-900) 4%, transparent);
+  --border-strong: color-mix(in oklab, var(--color-sage-900) 25%, transparent);
+  --fill-positive: color-mix(in oklab, var(--color-status-green) 14%, transparent);
+  --fill-caution: color-mix(in oklab, var(--color-status-orange) 12%, transparent);
+
+  --border: var(--color-sage-200);
+  /* En Cashmere `--input` es el FONDO del campo (no el borde, como en shadcn): blanco sobre el lienzo. */
+  --input: #ffffff;
+  /* Borde de controles: sage-400 (3,3:1 sobre blanco, 3,0:1 sobre el lienzo; WCAG 1.4.11). Token propio de
+     AgroNexo: la combinación campo blanco + borde sage-400 es parte de la identidad. */
+  --input-border: var(--color-sage-400);
+  /* Foco: Pine pleno. Los componentes usan border-ring (13:1) y ring-ring/50 (halo ≈3:1, WCAG 2.4.7/1.4.11). */
+  --ring: var(--color-pine);
+
+  --chart-1: var(--color-field-700);
+  --chart-2: var(--color-field-500);
+  --chart-3: var(--color-field-300);
+  --chart-4: var(--color-sage-400);
+  --chart-5: var(--color-field-950);
+
+  /* Colores "pop" de Cashmere (Badge, chips): tinte claro + texto profundo. AgroNexo no tiene azul, violeta ni
+     amarillo: verde y naranja son los estados reales; amarillo (warning en Cashmere) va al naranja de pendiente;
+     azul y violeta quedan en neutro salvia. */
+  --pop-green: color-mix(in oklab, var(--color-status-green) 10%, white);
+  --pop-green-foreground: var(--color-status-green-ink);
+  --pop-orange: color-mix(in oklab, var(--color-status-orange) 10%, white);
+  --pop-orange-foreground: var(--color-status-orange-ink);
+  --pop-yellow: color-mix(in oklab, var(--color-status-orange) 10%, white);
+  --pop-yellow-foreground: var(--color-status-orange-ink);
+  --pop-blue: var(--color-sage-100);
+  --pop-blue-foreground: var(--color-sage-700);
+  --pop-purple: var(--color-sage-100);
+  --pop-purple-foreground: var(--color-sage-700);
+
+  /* Portada del perfil del profesional: un degradado difuminado por profesión, siempre dentro de la paleta
+     (se distinguen por luminosidad, no por tono). Lo consume `ui/components/ProfileCover`. */
+  --cover-agronomist:
+    radial-gradient(120% 140% at 15% 20%, var(--color-field-700) 0%, transparent 60%),
+    radial-gradient(90% 120% at 85% 90%, var(--color-field-200) 0%, transparent 65%),
+    linear-gradient(120deg, var(--color-field-600), var(--color-field-400));
+  --cover-accountant:
+    radial-gradient(120% 140% at 20% 15%, var(--color-sage-400) 0%, transparent 60%),
+    radial-gradient(90% 120% at 85% 85%, var(--color-field-100) 0%, transparent 65%),
+    linear-gradient(120deg, var(--color-sage-300), var(--color-field-300));
+  --cover-lawyer:
+    radial-gradient(120% 140% at 80% 20%, var(--color-field-600) 0%, transparent 55%),
+    radial-gradient(100% 130% at 10% 90%, var(--color-pine) 0%, transparent 70%),
+    linear-gradient(120deg, var(--color-field-900), var(--color-sage-700));
+  --cover-investor:
+    radial-gradient(120% 140% at 15% 85%, var(--color-pine) 0%, transparent 55%),
+    radial-gradient(100% 130% at 90% 15%, var(--color-field-200) 0%, transparent 60%),
+    linear-gradient(120deg, var(--color-field-800), var(--color-field-500));
+  /* Rol "Otro" y cualquier caso sin profesión conocida. */
+  --cover-neutral:
+    radial-gradient(120% 140% at 20% 20%, var(--color-sage-300) 0%, transparent 60%),
+    linear-gradient(120deg, var(--color-sage-200), var(--color-sage-100));
+
+  /* Sombras de Cashmere (suaves, con hairline), teñidas de pine en vez del gris cálido original. */
+  --shadow-xs: 0 0.0625rem 0.125rem color-mix(in oklch, var(--color-pine) 5%, transparent);
+  --shadow-sm:
+    0 0 0 0.0625rem color-mix(in oklch, var(--color-pine) 5%, transparent),
+    0 0.0625rem 0.125rem color-mix(in oklch, var(--color-pine) 5%, transparent);
+  --shadow-md:
+    0 0 0 0.0625rem color-mix(in oklch, var(--color-pine) 4%, transparent),
+    0 0.125rem 0.375rem -0.0625rem color-mix(in oklch, var(--color-pine) 6%, transparent),
+    0 0.5rem 1.5rem -0.375rem color-mix(in oklch, var(--color-pine) 8%, transparent);
+  --shadow-lg:
+    0 0 0 0.0625rem color-mix(in oklch, var(--color-pine) 3.5%, transparent),
+    0 0.375rem 1rem -0.625rem color-mix(in oklch, var(--color-pine) 6%, transparent),
+    0 1rem 2.75rem -1.25rem color-mix(in oklch, var(--color-pine) 8%, transparent);
+  --shadow-xl:
+    0 0 0 0.0625rem color-mix(in oklch, var(--color-pine) 3.5%, transparent),
+    0 0.75rem 1.75rem -0.875rem color-mix(in oklch, var(--color-pine) 7%, transparent),
+    0 1.75rem 4rem -1.625rem color-mix(in oklch, var(--color-pine) 10%, transparent);
+  /* Alias que leen los componentes de Cashmere ([box-shadow:var(--shadow-s)] etc.). */
+  --shadow-s: var(--shadow-sm);
+  --shadow-m: var(--shadow-md);
+  --shadow-l: var(--shadow-lg);
+  --shadow-inset:
+    inset 0 0 0 0.0625rem color-mix(in oklch, var(--color-pine) 4%, transparent),
+    inset 0 0.0625rem 0.0625rem color-mix(in oklch, var(--color-pine) 3%, transparent);
+  --shadow-button:
+    0 0 0 0.0625rem color-mix(in oklch, var(--color-pine) 5%, transparent),
+    0 0.0625rem 0.0625rem color-mix(in oklch, var(--color-pine) 4%, transparent);
+  --shadow-button-hover:
+    0 0 0 0.0625rem color-mix(in oklch, var(--color-pine) 6%, transparent),
+    0 0.125rem 0.375rem -0.0625rem color-mix(in oklch, var(--color-pine) 8%, transparent);
+  --shadow-primary: 0 0.0625rem 0.125rem color-mix(in oklch, var(--color-pine) 12%, transparent);
+  --shadow-primary-hover: 0 0.125rem 0.375rem -0.0625rem color-mix(in oklch, var(--color-pine) 18%, transparent);
+
+  /* Motion de Cashmere (perfil estándar): lo leen las clases transition-* y ease-*. */
+  --transition-duration-fast: 150ms;
+  --transition-duration-base: 200ms;
+  --transition-duration-slow: 280ms;
+  --ease-out: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --ease-in: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  --default-transition-duration: var(--transition-duration-fast);
+  --default-transition-timing-function: var(--ease-out);
+
+  /* Lienzo del marco autenticado: gris salvia medio, para que las cards y el sidebar blancos se despeguen. */
+  --canvas: var(--color-sage-100);
+
+  /* Sidebar del marco: pastillas blancas sobre el lienzo; hover en verde campo claro y el activo en pine pleno
+     (el círculo oscuro de la referencia). Para probar otra paleta se cambian solo estas variables. */
+  --sidebar: #ffffff;
+  --sidebar-foreground: var(--color-sage-600);
+  --sidebar-label: var(--color-sage-500);
+  --sidebar-primary: var(--color-pine);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--color-field-100);
+  --sidebar-accent-foreground: var(--color-field-800);
+  --sidebar-border: var(--color-sage-200);
+  --sidebar-ring: var(--color-field-700);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border-strong: var(--border-strong);
+  --color-fill-positive: var(--fill-positive);
+  --color-fill-caution: var(--fill-caution);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-border: var(--input-border);
+  --color-ring: var(--ring);
+  --color-pop-green: var(--pop-green);
+  --color-pop-green-foreground: var(--pop-green-foreground);
+  --color-pop-orange: var(--pop-orange);
+  --color-pop-orange-foreground: var(--pop-orange-foreground);
+  --color-pop-yellow: var(--pop-yellow);
+  --color-pop-yellow-foreground: var(--pop-yellow-foreground);
+  --color-pop-blue: var(--pop-blue);
+  --color-pop-blue-foreground: var(--pop-blue-foreground);
+  --color-pop-purple: var(--pop-purple);
+  --color-pop-purple-foreground: var(--pop-purple-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-canvas: var(--canvas);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-label: var(--sidebar-label);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 0.5rem);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.375rem);
+  --radius-2xl: calc(var(--radius) + 0.75rem);
+  --radius-3xl: calc(var(--radius) + 1.5rem);
+
+  --shadow-s: var(--shadow-s);
+  --shadow-m: var(--shadow-m);
+  --shadow-l: var(--shadow-l);
+  --shadow-inset: var(--shadow-inset);
+  --shadow-button: var(--shadow-button);
+  --shadow-button-hover: var(--shadow-button-hover);
+  --shadow-primary: var(--shadow-primary);
+  --shadow-primary-hover: var(--shadow-primary-hover);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  /* Base de Cashmere: selección con el color de acción, textarea que crece con el contenido y gutter
+     estable para que la página no salte cuando aparece la barra de scroll o se abre un diálogo. */
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+  textarea {
+    resize: vertical;
+  }
+  @supports (field-sizing: content) {
+    textarea {
+      field-sizing: content;
+      max-height: 20lh;
+      overflow-y: auto;
+    }
+  }
+  html {
+    scrollbar-gutter: stable;
+  }
+  @supports (scrollbar-gutter: stable) {
+    html body[data-scroll-locked] {
+      margin-right: 0 !important;
+    }
+  }
+}
+
+body {
+  background-color: var(--color-sage-50, #f4f6f4);
+  color: var(--color-pine, #00311e);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* En el marco autenticado el lienzo es `canvas`: el hueco estable de la barra de scroll toma el fondo del body, así que
+   el body lo acompaña para que no quede una franja más clara a la derecha. */
+body:has([data-slot="app-shell"]) {
+  background-color: var(--canvas);
+}
+
+/* Jerarquía semántica: H1–H6 según el Design System (las clases text-heading-* la pisan cuando hace falta) */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    letter-spacing: var(--tracking-heading);
+  }
+  h1 { font-size: 36px; line-height: 40px; font-weight: 700; }
+  h2 { font-size: 30px; line-height: 36px; font-weight: 700; }
+  h3 { font-size: 24px; line-height: 32px; font-weight: 600; }
+  h4 { font-size: 20px; line-height: 28px; font-weight: 600; }
+  h5 { font-size: 18px; line-height: 28px; font-weight: 600; }
+  h6 { font-size: 16px; line-height: 24px; font-weight: 600; }
+}
+
+/* Cifras (qq/ha, $/ha, fechas): Inter con números tabulares, para que las columnas alineen. */
+@utility text-figure {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LANDING
+   Tokens propios de la landing. La paleta todavía puede cambiar: las secciones leen solo estas variables.
+   ───────────────────────────────────────────────────────────────────────────── */
+@theme static {
+  /* Crema del resplandor del hero. No está en la paleta del producto: pendiente de confirmar o reemplazar. */
+  --color-cream: #f3eedf;
+}
+
+:root {
+  /* Resplandor radial del hero: verde campo claro con crema arriba, que se apaga en sage-25. */
+  --hero-glow: radial-gradient(
+    120% 70% at 50% 0%,
+    color-mix(in oklab, var(--color-field-100) 55%, var(--color-cream)) 0%,
+    color-mix(in oklab, var(--color-field-50) 60%, var(--color-sage-25)) 42%,
+    var(--color-sage-25) 70%
+  );
+}
+
+/* La landing usa sage-25 de fondo (el producto, sage-50): así el resplandor del hero termina sin corte. */
+body {
+  background-color: var(--color-sage-25);
+}
+
+/* Elementos que arman los puntos de `StoryDots`: aparecen cuando los puntos llegan (`--reveal` lo maneja el lienzo).
+   Con "reducir movimiento" no hay lienzo y se ven desde el principio. */
+[data-story-reveal] {
+  opacity: var(--reveal, 0);
+  transition: opacity 0.12s linear;
+
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 1;
+  }
+}
+
+/* Cursor de la palabra que se escribe en el hero. */
+@keyframes caret-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+@utility animate-caret {
+  animation: caret-blink 1s steps(1) infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

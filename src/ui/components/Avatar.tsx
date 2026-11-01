@@ -1,0 +1,159 @@
+'use client';
+
+import * as React from 'react';
+import { Avatar as AvatarPrimitive } from '@base-ui/react/avatar';
+import { cn } from '@/shared/utils/cn';
+
+/*
+ * Cashmere Avatar (registros `cashmere/avatar-base` y `cashmere/avatar-group`): círculo con sombra suave, imagen
+ * o iniciales. AgroNexo suma `size`, `shape` (cuadrado redondeado, para la imagen de un perfil), `AvatarBadge`
+ * (punto de estado) e `InitialsAvatar` (iniciales en pine o en tinte), que son los usos de la app.
+ */
+
+const AVATAR_SIZES = {
+  xs: 'size-6 text-[0.6875rem]',
+  sm: 'size-8 text-xs',
+  default: 'size-10 text-sm',
+  lg: 'size-12 text-base',
+  /** Imagen de un perfil, sobre su portada. */
+  xl: 'size-20 text-heading-sm',
+} as const;
+
+/** El cuadrado redondea con el radio de las cards; imagen y fallback lo heredan del root. */
+const AVATAR_SHAPES = {
+  circle: 'rounded-full',
+  square: 'rounded-2xl',
+} as const;
+
+type AvatarShape = keyof typeof AVATAR_SHAPES;
+
+function Avatar({
+  className,
+  size = 'default',
+  shape = 'circle',
+  ...props
+}: AvatarPrimitive.Root.Props & { size?: keyof typeof AVATAR_SIZES; shape?: AvatarShape }) {
+  return (
+    <AvatarPrimitive.Root
+      data-slot="avatar"
+      data-size={size}
+      data-shape={shape}
+      className={cn(
+        'group/avatar relative flex shrink-0 [box-shadow:var(--shadow-s)] select-none',
+        AVATAR_SIZES[size],
+        AVATAR_SHAPES[shape],
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
+  return (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn(
+        'aspect-square size-full rounded-full object-cover group-data-[shape=square]/avatar:rounded-2xl',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function AvatarFallback({ className, ...props }: AvatarPrimitive.Fallback.Props) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        'bg-muted text-muted-foreground flex size-full items-center justify-center rounded-full font-medium group-data-[shape=square]/avatar:rounded-2xl',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+/** Punto de estado abajo a la derecha del avatar (por ejemplo, "en línea"). */
+function AvatarBadge({ className, ...props }: React.ComponentProps<'span'>) {
+  return (
+    <span
+      data-slot="avatar-badge"
+      className={cn(
+        'bg-primary ring-card absolute right-0 bottom-0 z-10 inline-flex size-2.5 items-center justify-center rounded-full ring-2 select-none',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+  max?: number;
+  total?: number;
+}
+
+function AvatarGroup({ className, children, max, total, ...props }: AvatarGroupProps) {
+  const childArray = React.Children.toArray(children);
+  const visible = max ? childArray.slice(0, max) : childArray;
+  const hiddenCount = (total ?? childArray.length) - visible.length;
+
+  return (
+    <div
+      data-slot="avatar-group"
+      className={cn('flex items-center -space-x-2', className)}
+      {...props}
+    >
+      {visible.map((child, i) => (
+        <div key={i} className="ring-card rounded-full ring-2">
+          {child}
+        </div>
+      ))}
+      {hiddenCount > 0 && (
+        <div className="bg-muted text-muted-foreground ring-card relative flex size-10 items-center justify-center rounded-full text-xs font-medium ring-2 [box-shadow:var(--shadow-s)]">
+          +{hiddenCount}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const INITIALS_SIZES = { xs: 'xs', sm: 'sm', md: 'default', lg: 'lg', xl: 'xl' } as const;
+
+const INITIALS_TONES = {
+  /** Relleno pine + texto beige (lo activo / la persona protagonista). */
+  solid: 'bg-pine text-sage-50',
+  /** Tinte suave para listas y equipos. */
+  tint: 'bg-muted text-muted-foreground',
+  /** Sobre pine (un ítem activo del sidebar): texto claro sobre un velo. */
+  inverse: 'bg-sage-50/15 text-sage-50',
+} as const;
+
+export interface InitialsAvatarProps extends React.HTMLAttributes<HTMLSpanElement> {
+  /** Iniciales a mostrar (1–2 letras). */
+  initials: string;
+  size?: keyof typeof INITIALS_SIZES;
+  tone?: keyof typeof INITIALS_TONES;
+  shape?: AvatarShape;
+}
+
+/** Avatar de iniciales: el Avatar de Cashmere con solo el fallback, en los tonos de AgroNexo. */
+function InitialsAvatar({
+  initials,
+  size = 'md',
+  tone = 'solid',
+  shape = 'circle',
+  className,
+  ...props
+}: InitialsAvatarProps) {
+  return (
+    <Avatar size={INITIALS_SIZES[size]} shape={shape} className={className} {...props}>
+      <AvatarFallback className={cn('font-semibold', INITIALS_TONES[tone])}>
+        {initials}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
+export { Avatar, AvatarImage, AvatarFallback, AvatarBadge, AvatarGroup, InitialsAvatar };
