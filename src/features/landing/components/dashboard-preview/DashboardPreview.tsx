@@ -39,6 +39,8 @@ export function DashboardPreview() {
         className="relative transition-opacity duration-300 data-[ready=false]:opacity-0"
         style={{ height: WINDOW_HEIGHT * scale }}
       >
+        {/* Marco de vidrio alrededor de la ventana, con el borde fino en degradé verde (`frame-glow`). */}
+        <span aria-hidden className="frame-glow absolute -inset-1.5 rounded-[14px] backdrop-blur-sm md:-inset-2.5 md:rounded-[18px]" />
         <div
           inert
           aria-hidden

@@ -7,7 +7,8 @@ import { useEffect, useRef } from 'react';
  *
  * - Cada escena es una sección `[data-story-scene]`, en el orden de la página, con su forma:
  *   `chips`   = puntos empaquetados en grilla dentro de cada hijo de `[data-story-target]` (botones, tags);
- *   `outline` = puntos repartidos sobre el borde redondeado de `[data-story-target]` (el campo de búsqueda).
+ *   `outline` = puntos repartidos sobre el borde redondeado de `[data-story-target]` (el campo de búsqueda, el
+ *   celular de WhatsApp).
  * - Ventana de entrada de una escena: mientras su borde superior viaja del pie de la pantalla al borde de arriba.
  *   Dentro de ella los puntos pasan de la forma anterior a la nueva entre MORPH_START y MORPH_END, con curva en S y
  *   un leve abanico hacia afuera. Las formas se leen en vivo del DOM, así que viajan con el scroll: salen de arriba

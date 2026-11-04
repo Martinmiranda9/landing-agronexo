@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { GlowSpot } from './GlowSpot';
 
 const SAMPLE_NEED = 'Necesito un ingeniero agrónomo para planificar soja en Río Cuarto, Córdoba';
 
@@ -55,6 +56,7 @@ export function TeamSearch() {
       aria-labelledby="team-search-title"
       className="relative z-1 flex min-h-dvh items-center justify-center px-6 py-24 md:px-12"
     >
+      <GlowSpot className="top-1/2 left-1/2 h-150 w-[min(1100px,140vw)] -translate-1/2" />
       <div
         data-in-view={inView}
         className="flex max-w-170 translate-y-5 flex-col items-center text-center opacity-0 transition-[opacity,transform] duration-600 ease-[cubic-bezier(0.16,1,0.3,1)] data-[in-view=true]:translate-y-0 data-[in-view=true]:opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-100"

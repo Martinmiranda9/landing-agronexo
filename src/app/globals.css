@@ -396,21 +396,70 @@ body:has([data-slot="app-shell"]) {
 @theme static {
   /* Crema del resplandor del hero. No está en la paleta del producto: pendiente de confirmar o reemplazar. */
   --color-cream: #f3eedf;
+
+  /* Colores de WhatsApp, solo para el chat de la sección de WhatsApp (que se vea como el chat real). */
+  --color-wa-wallpaper: #efeae2;
+  --color-wa-doodle: #d6cdc0;
+  --color-wa-outgoing: #d9fdd3;
+  --color-wa-bar: #f6f5f3;
+  --color-wa-read: #53bdeb;
+  --color-wa-green: #25d366;
+  --color-wa-teal: #008069;
 }
 
 :root {
-  /* Resplandor radial del hero: verde campo claro con crema arriba, que se apaga en sage-25. */
-  --hero-glow: radial-gradient(
-    120% 70% at 50% 0%,
-    color-mix(in oklab, var(--color-field-100) 55%, var(--color-cream)) 0%,
-    color-mix(in oklab, var(--color-field-50) 60%, var(--color-sage-25)) 42%,
-    var(--color-sage-25) 70%
+  /* Resplandor radial del hero, como el de trama.so: verde campo que baja desde arriba y se abre a lo ancho, con un
+     toque de crema en el centro. Debajo, un degradé que baja de sage-25 al fondo de la página (`canvas`), así el hero
+     se funde con la sección siguiente sin corte. */
+  --hero-glow:
+    radial-gradient(
+      100% 75% at 50% 0%,
+      color-mix(in oklab, var(--color-field-300) 75%, var(--color-cream)) 0%,
+      color-mix(in oklab, var(--color-field-200) 55%, transparent) 35%,
+      color-mix(in oklab, var(--color-field-100) 35%, transparent) 60%,
+      transparent 85%
+    ),
+    linear-gradient(to bottom, var(--color-sage-25) 45%, var(--canvas) 100%);
+
+  /* Zona de luz detrás de una sección (`GlowSpot`): verde campo en el centro que se apaga en los bordes de su caja. */
+  --glow-spot: radial-gradient(
+    ellipse closest-side,
+    color-mix(in oklab, var(--color-field-300) 55%, transparent) 0%,
+    color-mix(in oklab, var(--color-field-200) 25%, transparent) 55%,
+    transparent 100%
   );
 }
 
-/* La landing usa sage-25 de fondo (el producto, sage-50): así el resplandor del hero termina sin corte. */
+/* Fondo de la landing: el `canvas` del producto, explícito. Antes salía de `body:has([data-slot="app-shell"])`, que
+   se activa sin querer por el tablero de muestra de "Producto". */
 body {
-  background-color: var(--color-sage-25);
+  background-color: var(--canvas);
+}
+
+/* Marco con borde de 1 px en degradé verde campo (más intenso arriba, se apaga abajo), para piezas destacadas como el
+   tablero de "Producto". El borde es un ::before con máscara: respeta el radio y no ocupa lugar. */
+@utility frame-glow {
+  position: relative;
+  background-color: color-mix(in oklab, white 45%, transparent);
+  box-shadow: 0 30px 80px -30px color-mix(in oklab, var(--color-field-500) 35%, transparent);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-field-400) 90%, transparent) 0%,
+      color-mix(in oklab, var(--color-field-300) 55%, transparent) 45%,
+      color-mix(in oklab, var(--color-sage-300) 45%, transparent) 100%
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
 }
 
 /* Elementos que arman los puntos de `StoryDots`: aparecen cuando los puntos llegan (`--reveal` lo maneja el lienzo).
@@ -422,6 +471,13 @@ body {
   @media (prefers-reduced-motion: reduce) {
     opacity: 1;
   }
+}
+
+/* Fondo del chat de WhatsApp: el beige con dibujitos sutiles (hojas, gotas, soles y espigas, en vez de los de WhatsApp). */
+@utility bg-wa-wallpaper {
+  background-color: var(--color-wa-wallpaper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96' fill='none' stroke='%23d6cdc0' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 30c0-9 7-15 15-15 0 9-7 15-15 15zM12 30l9-9'/%3E%3Cpath d='M70 14c3 4 5 7 5 10a5 5 0 0 1-10 0c0-3 2-6 5-10z'/%3E%3Ccircle cx='60' cy='62' r='5'/%3E%3Cpath d='M60 52v3M60 69v3M50 62h3M67 62h3M53 55l2 2M65 67l2 2M53 69l2-2M65 57l2-2'/%3E%3Cpath d='M22 84V64M22 70l-5-4M22 70l5-4M22 77l-5-4M22 77l5-4'/%3E%3Cpath d='M84 80h8M88 76v8'/%3E%3Ccircle cx='40' cy='40' r='1.5'/%3E%3C/svg%3E");
+  background-size: 96px 96px;
 }
 
 /* Cursor de la palabra que se escribe en el hero. */
