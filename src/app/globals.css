@@ -421,6 +421,17 @@ body:has([data-slot="app-shell"]) {
     ),
     linear-gradient(to bottom, var(--color-sage-25) 45%, var(--canvas) 100%);
 
+  /* El mismo resplandor del hero, invertido para el pie: sube desde abajo y se apaga en el gris de la página. */
+  --footer-glow:
+    radial-gradient(
+      100% 75% at 50% 100%,
+      color-mix(in oklab, var(--color-field-300) 75%, var(--color-cream)) 0%,
+      color-mix(in oklab, var(--color-field-200) 55%, transparent) 35%,
+      color-mix(in oklab, var(--color-field-100) 35%, transparent) 60%,
+      transparent 85%
+    ),
+    var(--canvas);
+
   /* Zona de luz detrás de una sección (`GlowSpot`): verde campo en el centro que se apaga en los bordes de su caja. */
   --glow-spot: radial-gradient(
     ellipse closest-side,

@@ -1,6 +1,7 @@
 import { AgentsSection } from '@/features/landing/components/agents/AgentsSection';
 import { CtaSection } from '@/features/landing/components/cta/CtaSection';
 import { FaqSection } from '@/features/landing/components/faq/FaqSection';
+import { Footer } from '@/features/landing/components/footer/Footer';
 import { Hero } from '@/features/landing/components/Hero';
 import { Navbar } from '@/features/landing/components/Navbar';
 import { ProductPreview } from '@/features/landing/components/ProductPreview';
@@ -26,6 +27,7 @@ export default function HomePage() {
         <FaqSection />
         <CtaSection />
       </main>
+      <Footer />
     </>
   );
 }
