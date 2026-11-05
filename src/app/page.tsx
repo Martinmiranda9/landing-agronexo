@@ -1,4 +1,5 @@
 import { AgentsSection } from '@/features/landing/components/agents/AgentsSection';
+import { CtaSection } from '@/features/landing/components/cta/CtaSection';
 import { FaqSection } from '@/features/landing/components/faq/FaqSection';
 import { Hero } from '@/features/landing/components/Hero';
 import { Navbar } from '@/features/landing/components/Navbar';
@@ -23,6 +24,7 @@ export default function HomePage() {
         <AgentsSection />
         <RolesSection />
         <FaqSection />
+        <CtaSection />
       </main>
     </>
   );
